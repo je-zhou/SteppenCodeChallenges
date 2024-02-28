@@ -7,7 +7,67 @@
       //
       // TODO: Implement this function.
       //
-      const transformObject = () => {}
+
+      /**
+      * Transforms input Object by deeply incrementing numbers by 6 concatenating " BLARGH to strings"
+
+      * @param {Object} input
+      * @return {Object} newObject 
+      */
+      const transformObject = (input) => {
+        // Turn old input into an array so we can parse over
+        const entries = Object.entries(input);
+
+        // Loop over the entries and add to a new object
+        const newEntries = entries.map(([key, value]) => {
+          const valType = typeof value;
+          
+          // String & Number types
+          if (valType === "string") value += " BLARGH";
+          if (valType === "number") value += 6;
+          
+          // Object & Array types
+          if (valType === "object") {
+            if (Array.isArray(value)) {
+              // Need a way to also handle Arrays within Arrays and Objects within Arrays
+              value = transformArray(value);
+            } else {
+              // Call recursively if value is an object
+              value = transformObject(value);
+            }
+          }
+
+          return [key, value];
+        })
+
+        const newObject = Object.fromEntries(newEntries);
+
+        return newObject
+      }
+
+      /**
+      * Helper function to *transformObject* to handle cases where there are nested arrays and objects within an array
+
+      * @param {Array} input
+      * @return {Array} newArray
+      */
+      const transformArray = (input) => {
+        // Loop over the entries and add to a new object
+        return input.map((value) => {
+          const valType = typeof value;
+
+          // String & Number types
+          if (valType === "string") return value + " BLARGH";
+          if (valType === "number") return value + 6;
+
+          // Object & Array types
+          if (valType === "object") {
+            if (Array.isArray(value)) return transformArray(value);
+            
+            return transformObject(value);
+          }
+        });
+      }
     </script>
   </head>
 
