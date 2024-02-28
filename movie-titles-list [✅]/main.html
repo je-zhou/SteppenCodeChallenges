@@ -4,10 +4,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
     <script>
-      //
-      // TODO: Implement this function.
-      //
-      const getMovieList = () => {}
+      /**
+      * Returns a promise for a list of movies for the inputted year, sorted alphabetically
+      * If there are no results for an input year returns an empty array
+      * Only returns provides the first page of data from the API endpoint
+
+      * @param {number} year
+      * @return {Promise<Array>} movieTitles
+      */
+      const getMovieList = async (year) => {
+        try {
+          const response = await fetch(`https://jsonmock.hackerrank.com/api/movies?Year=${year}`);
+          const json = await response.json();
+          const data = json.data;
+
+          const movieTitles = data.map(obj => obj.Title);
+
+          // Sort by title
+          movieTitles.sort();
+
+          return movieTitles;
+
+        } catch (error) {
+          // Return an empty array and log the error if something goes wrong with the API call
+          console.log(error);
+          return [];
+        }
+      }
     </script>
   </head>
 
