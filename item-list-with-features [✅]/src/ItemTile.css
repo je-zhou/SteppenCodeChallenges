@@ -1,0 +1,9 @@
+.translateRightParent:hover .translateRightChild {
+  transition: 0.25s;
+  left: 0px;
+}
+
+.translateRightChild {
+  transition: 0.25s;
+  left: -100px;
+}
