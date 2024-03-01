@@ -13,3 +13,29 @@ insert into orders (order_id,customer_id,ordered_at) values (10248,3,'1996-07-04
 insert into products (product_id,name) values (11,'Rambutan'),(42,'The Matrix Reloaded'),(72,'Milk (2 litres)'),(14,'QZ-183'),(51,'Oak Plank (2m x 4m)'),(31,'Loot Crate'),(39,'F-111 Aardvark'),(49,'Fresh Air'),(71,'Bowler Hat'),(24,'12 month subscription'),(59,'Bunch of Roses') ;
 
 insert into order_line_items (order_line_item_id,order_id,product_id,unit_price,quantity) values (24601,10248,11,14,12),(24602,10248,42,9,10),(24603,10248,72,34,5),(24604,10249,14,18,9),(24605,10249,51,42,40),(24606,10253,31,10,20),(24607,10253,39,14,42),(24608,10253,49,16,40),(24609,10274,71,17,20),(24610,10274,72,27,7),(24611,10275,24,3,12),(24612,10275,59,44,6),(24613,10296,11,16,12),(24614,10296,51,13,30),(24615,10296,39,28,15),(24616,10275,72,3,3),(24617,10275,39,50,4),(24618,10275,11,4,5) ;
+
+SELECT
+  year,
+  month,
+  customer_id,
+  order_value as total_monthly_order_value
+FROM 
+  (
+    SELECT
+    EXTRACT(YEAR FROM orders.ordered_at) AS year,
+    EXTRACT(MONTH FROM orders.ordered_at) AS month,
+    orders.customer_id,
+    SUM(order_line_items.unit_price * order_line_items.quantity) AS order_value,
+    RANK() OVER (
+      PARTITION BY 
+        EXTRACT(YEAR FROM orders.ordered_at), 
+        EXTRACT(MONTH FROM orders.ordered_at) 
+      ORDER BY 
+        SUM(order_line_items.unit_price * order_line_items.quantity) DESC, customer_id
+    ) AS ranking
+  FROM
+    order_line_items
+    JOIN orders on orders.order_id = order_line_items.order_id
+  GROUP BY orders.ordered_at, orders.customer_id
+  ) total_orders
+WHERE ranking = 1
