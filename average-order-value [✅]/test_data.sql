@@ -19,28 +19,24 @@ SELECT
   COUNT(order_id) as num_orders,
   SUM(order_value) as total_order_value,
   AVG(order_value) as avg_order_value
-
 FROM 
   customers
 JOIN
-(
-  SELECT 
-    orders.order_id as order_id,
-    customer_id,
-    SUM(order_line_items.unit_price * order_line_items.quantity) as order_value
-  FROM
-    orders
-  JOIN
-    order_line_items ON orders.order_id = order_line_items.order_id
-  GROUP BY
-    orders.order_id
-) orderSum
-
+  (
+    SELECT 
+      orders.order_id as order_id,
+      customer_id,
+      SUM(order_line_items.unit_price * order_line_items.quantity) as order_value
+    FROM
+      orders
+    JOIN
+      order_line_items ON orders.order_id = order_line_items.order_id
+    GROUP BY
+      orders.order_id
+  ) orderSum
 ON
   orderSum.customer_id = customers.customer_id
-
 GROUP BY
   name
-  
 ORDER BY
   avg_order_value DESC;
